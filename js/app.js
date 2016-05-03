@@ -3,17 +3,22 @@
  Author     : Stefan
  */
 /**
- * TODO: add automatic sticky-ing of top menu
+ * TODO: add automatic sticky-ing of top menu, make padding var
  */
 var scrollspy = {
     topMenu: $('#top-menu'),
+    topMenuHeight: '',
     menuItems: [],
     scrollItems: [],
     lastId: '',
     init: function () {
+        this.topMenuHeight = this.getMenuHeight();
         this.menuItems = this.getMenuItems();
         this.scrollItems = this.getScrollItems();
         this.bind();
+    },
+    getMenuHeight: function () {
+        this.topMenu.outerHeight() + 15;
     },
     getMenuItems: function () {
         return this.topMenu.find('a');
@@ -29,7 +34,7 @@ var scrollspy = {
     },
     bind: function () {
         $(window).scroll(function () {
-            var scrollTop = $(this).scrollTop(),
+            var scrollTop = $(this).scrollTop() + scrollspy.topMenuHeight,
                 curr = scrollspy.scrollItems.map(function () {
                     if ($(this).offset().top < scrollTop) {
                         return this;
