@@ -2,44 +2,51 @@
  Created on : 03-May-2016, 11:08:57
  Author     : Stefan
  */
-
+/**
+ * TODO: add automatic sticky-ing of top menu
+ */
 var scrollspy = {
-    topmenu: $('topmenu'),
-    
+    topMenu: $('#top-menu'),
+    menuItems: [],
+    scrollItems: [],
+    lastId: '',
+    init: function () {
+        this.menuItems = this.getMenuItems();
+        this.scrollItems = this.getScrollItems();
+    },
+    getMenuItems: function () {
+        return this.topMenu.find('a');
+    },
+    getScrollItems: function () {
+        var scrollItems = this.menuItems.map(function () {
+            var item = $($(this).attr("href"));
+            if (item.length) {
+                return item;
+            }
+        });
+        return scrollItems;
+    },
+    bind: function () {
+        $(window).scroll(function () {
+            var scrollTop = $(this).scrollTop(),
+                curr = scrollspy.scrollItems.map(function () {
+                    if ($(this).offset().top < scrollTop) {
+                        return this;
+                    }
+                }),
+                curr = curr[curr.length - 1],
+                currId = curr && curr.length ? curr[0].id : "";
+            if (scrollspy.lastId !== currId) {
+                scrollspy.lastId = currId;
+
+                scrollspy.menuItems
+                    .parent().removeClass("active")
+                    .end().filter("[href='#" + currId + "']").parent().addClass("active");
+            }
+        });
+    }
 };
 
-
-
-var lastId,
-    topMenu = $("#top-menu"),
-    topMenuHeight = topMenu.outerHeight()+15,
-    // All list items
-    menuItems = topMenu.find("a"),
-    // Anchors corresponding to menu items
-    scrollItems = menuItems.map(function(){
-      var item = $($(this).attr("href"));
-      if (item.length) { return item; }
-    });
-
-// Bind to scroll
-$(window).scroll(function(){
-   // Get container scroll position
-   var fromTop = $(this).scrollTop()+topMenuHeight;
-
-   // Get id of current scroll item
-   var cur = scrollItems.map(function(){
-     if ($(this).offset().top < fromTop)
-       return this;
-   });
-   // Get the id of the current element
-   cur = cur[cur.length-1];
-   var id = cur && cur.length ? cur[0].id : "";
-
-   if (lastId !== id) {
-       lastId = id;
-       // Set/remove active class
-       menuItems
-         .parent().removeClass("active")
-         .end().filter("[href='#"+id+"']").parent().addClass("active");
-   }                   
-});
+(function () {
+    scrollspy.init();
+})();
