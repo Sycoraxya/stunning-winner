@@ -13,6 +13,7 @@ var scrollspy = {
     init: function () {
         this.menuItems = this.getMenuItems();
         this.scrollItems = this.getScrollItems();
+        this.bind();
     },
     getMenuItems: function () {
         return this.topMenu.find('a');
